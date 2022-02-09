@@ -1,0 +1,44 @@
+---
+title: "projectPitch"
+author: "Chad Austgen"
+date: "2/8/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r cars, echo=FALSE}
+setwd("C:\\Users\\CRAUST~1\\OneDrive\\DOCUME~1\\STATIS~1\\STAT_689\\Project")
+```
+
+## Project Theme
+
+Our project will focus on the relationship between college football records and graduation rates. We will limit this study specifically to the Southeastern Confrence (SEC). Our null hypothesis will be that "college football records have no impact on university graduation rates." There is reason to believe that a winning or losing record could impact rates either through a distraction from the academic process or by positively affecting the spirits of the student body.
+
+![SEC Map](secMap.png){width=50%}
+
+## Data Sources
+
+Our Project will source data from at least two of the following locations:  
+
+  - https://collegescorecard.ed.gov/data/  
+  
+  - https://data.world/databeats/college-completion/workspace/file?filename=cc_institution_grads.csv  
+  
+  - https://api.collegefootballdata.com/api/docs/?url=/api-docs.json#/games/getTeamRecords  
+  
+  
+## Variable Selection
+
+A large portion of our project, as with many projects, will be variable selection. Football win percentages may create an impact for several years, and as such a time series analysis may be appropriate. In addition rates may be different from University to University and a dummy University categorical value may need to be included in any linear model type analysis.  
+
+![GLMnet](glmnet.jpg)
+
+## Regression
+
+As the scope of this class is restricted to data visualization rather than advanced analysis, we will restrict our approach to linear models / regression type techniques.  
+
+![Regression Diagnostics](rDiag.png)

@@ -1,0 +1,40 @@
+---
+title: "Data Acquisition and Cleaning"
+author: "Paul Burslem"
+date: "2/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Project Data Sources
+
+
+As discussed in our project pitch, we will extract data from the following locations:  
+
+  - **Completion**: https://data.world/databeats/college-completion/workspace/file?filename=cc_institution_grads.csv : records of college completion data from 3,800 degree-granting institutions in the United States.  
+ 
+#### Column Titles: 
+```{r echo=FALSE}
+InstitutionGrads <- read.csv(file = "cc_institution_grads.csv")
+InstitutionDetails <- read.csv(file = "cc_institution_details.csv")
+CollegeCompletion = merge(InstitutionGrads, InstitutionDetails, by="unitid")
+
+```
+  
+  - **Sports**: https://api.collegefootballdata.com/api/docs/?url=/api-docs.json#/games/getTeamRecords : College football records in the US.
+  
+## Data Transformation and Filetype
+
+For the Football team records, we will be using an API endpoint provided by collegefootballdata.com. We will be generating data based of year and team, and the output of the API is in JSON format. Our plan is to convert the data into a .csv file in order to best combine it with our other sources of data. .csv is also one of the most widely used data file types for data processing and visualization, but is also how we acquired the college completion data, which makes it an ideal common filetype.
+After downloading as csv, we will convert the data into dataframes, which will allow us to combine the data.
+
+
+The final tables or collections that will be used in the project.
+
+
+
+

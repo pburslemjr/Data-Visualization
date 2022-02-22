@@ -1,0 +1,54 @@
+---
+title: "Data Acquisition and Cleaning"
+author: "Paul Burslem"
+date: "2/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Load R Packages & Set Working Directory
+```{r setup, include=FALSE}
+library(jsonlite)
+library(httr)
+library(dplyr)
+
+setwd("/home/paul/vist-stat/Data-Visualization")
+```
+
+## Project Data Sources
+
+As discussed in our project pitch, we will extract data from the following locations:  
+
+  - **Scorecard** : https://collegescorecard.ed.gov/data/ : Data regarding US college student performance based off of location, and other identifying features.
+  
+  - **Completion**: https://data.world/databeats/college-completion/workspace/file?filename=cc_institution_grads.csv : records of college completion data from 3,800 degree-granting institutions in the United States.  
+  
+  - **Sports**: https://collegefootballdata.com/exporter/ : College football records in the US.
+
+```{r setup, include=FALSE}
+# You'll need to set up a folder in your working directory named 'footballRecords' to keep the .csv team records in.
+
+teamRecords<-list.files('footballRecords')
+recordsDataFrame<-data.frame(matrix(nrow=0,ncol=21))
+
+for (i in teamRecords) {
+  recordsDataFrame<-rbind(recordsDataFrame,read.csv(paste0('footballRecords\\',i)))
+}
+
+
+```
+  
+## Data Transformation
+
+For the Football team records, we will be using an API endpoint provided by collegefootballdata.com. There will be no required cleaning or handling missing/incomplete data, but the output of the API is in JSON format. Our plan is to convert the data into a .csv file in order to best combine it with our other sources of data. .csv is also one of the most widely used data file types for data processing and visualization. 
+
+
+The type of transformation needed for this data (cleaning, handling missing/incomplete data, etc.).
+The type of final file to load the data
+The final tables or collections that will be used in the project.
+
+

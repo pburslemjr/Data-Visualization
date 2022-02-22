@@ -25,8 +25,24 @@ CollegeCompletion = merge(InstitutionGrads, InstitutionDetails, by="unitid")
 
 ```
   
+  
+  
   - **Sports**: https://api.collegefootballdata.com/api/docs/?url=/api-docs.json#/games/getTeamRecords : College football records in the US.
   
+  
+  
+```{r, include=FALSE}
+# You'll need to set up a folder in your working directory named 'footballRecords' to keep the .csv team records in.
+
+teamRecords<-list.files('footballRecords')
+recordsDataFrame<-data.frame(matrix(nrow=0,ncol=21))
+
+for (i in teamRecords) {
+  recordsDataFrame<-rbind(recordsDataFrame,read.csv(paste0('footballRecords/',i)))
+}
+head(recordsDataFrame)
+
+```
 ## Data Transformation and Filetype
 
 For the Football team records, we will be using an API endpoint provided by collegefootballdata.com. We will be generating data based of year and team, and the output of the API is in JSON format. Our plan is to convert the data into a .csv file in order to best combine it with our other sources of data. .csv is also one of the most widely used data file types for data processing and visualization, but is also how we acquired the college completion data, which makes it an ideal common filetype.

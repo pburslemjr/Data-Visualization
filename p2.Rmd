@@ -41,13 +41,51 @@ for (i in teamRecords) {
   recordsDataFrame<-rbind(recordsDataFrame,read.csv(paste0('footballRecords/',i)))
 }
 head(recordsDataFrame)
-
 ```
 ## Data Transformation and Filetype
+
+```{r, inclide=FALSE}
+# reducing football win records to only SEC schools
+recordsDataFrame<-recordsDataFrame[recordsDataFrame$conference == 'SEC', ]
+
+
+#storing the names of all the SEC teams
+teamNames <- unique(recordsDataFrame$team)
+
+# finding out the specific names of all the SEC schools (may not be needed??)
+Alabama <- unique(CollegeCompletion$chronname[grepl("University of Alabama", CollegeCompletion$chronname)])
+Arkansas <- unique(CollegeCompletion$chronname[grepl("University of Arkansas", CollegeCompletion$chronname)])
+Auburn <- unique(CollegeCompletion$chronname[grepl("Auburn", CollegeCompletion$chronname)])
+Florida <- unique(CollegeCompletion$chronname[grepl("University of Florida", CollegeCompletion$chronname)])
+Georgia <- unique(CollegeCompletion$chronname[grepl("Georgia", CollegeCompletion$chronname)])
+Mississippi <- unique(CollegeCompletion$chronname[grepl("Mississippi", CollegeCompletion$chronname)])
+Missouri <- unique(CollegeCompletion$chronname[grepl("Missouri", CollegeCompletion$chronname)])
+Carolina <- unique(CollegeCompletion$chronname[grepl("University of South Carolina", CollegeCompletion$chronname)])
+Texas <- unique(CollegeCompletion$chronname[grepl("Texas A&M University", CollegeCompletion$chronname)])
+Lousiana <- unique(CollegeCompletion$chronname[grepl("Louisiana State University", CollegeCompletion$chronname)])
+Ten <- unique(CollegeCompletion$chronname[grepl("University of Tennessee", CollegeCompletion$chronname)])
+
+#storing the names of all the Universities in the SEC in a vector
+collegeNames <- c('University of Alabama at Tuscaloosa', 'University of Arkansas at Fayetteville', 'Auburn University', 'University of Florida','University of Georgia', 'University of Kentucky', 'Louisiana State University at Baton Rouge', 'Mississippi State University', 'University of Missouri at Columbia', 'University of Mississippi', 'University of South Carolina at Columbia', 'Texas A&M University at College Station', 'University of Tennessee at Knoxville', 'Vanderbilt University')
+
+# Limiting all the colleges with graduation rates to just SEC schools.
+CollegeCompletion<-CollegeCompletion[CollegeCompletion$chronname %in% collegeNames,]
+
+
+#changing the names of all the universities to simply be the team name for easier merging.
+for(i in 1:length(collegeNames)){
+  CollegeCompletion$chronname[CollegeCompletion$chronname==collegeNames[i]] <- teamNames[i]
+  
+}
+```
+
+In order to transform the data set to fit our requirements, we needed to change the names of the universities and the year format. This was done by conducting checks to ensure the correct full names of universities as given in the raw data set. We then ran a loop to change each name of the university to their football team name, in order to match with football records data set.
 
 For the Football team records, we will be using an API endpoint provided by collegefootballdata.com. We will be generating data based of year and team, and the output of the API is in JSON format. Our plan is to convert the data into a .csv file in order to best combine it with our other sources of data. .csv is also one of the most widely used data file types for data processing and visualization, but is also how we acquired the college completion data, which makes it an ideal common filetype.
 After downloading as csv, we will convert the data into dataframes, which will allow us to combine the data.
 
+College completion rates is a merge of Institution details and Institution Grads.
+First step was to identify the names of the universities we need, sometimes they differ by location due to multiple campuses of the same university. I did this by getting a list of univerisites with the key word.
 
 The final tables or collections that will be used in the project.
 

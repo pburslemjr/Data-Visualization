@@ -1,0 +1,226 @@
+---
+title: "Data Analysis Plan"
+author: "Paul Burslem, Chad Austgen, Arya Ramchandani"
+date: "2/19/2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyr)
+library(plotly)
+#setwd(shortPathName('C:\\Users\\craustgen\\Documents\\Project\\Data-Visualization'))
+```
+
+  
+```{r echo=FALSE}
+InstitutionGrads <- read.csv(file = "cc_institution_grads.csv")
+InstitutionDetails <- read.csv(file = "cc_institution_details.csv")
+CollegeCompletion = merge(InstitutionGrads, InstitutionDetails, by="unitid")
+```
+
+```{r, include=FALSE}
+teamRecords<-list.files('footballRecords')
+recordsDataFrame<-data.frame(matrix(nrow=0,ncol=21))
+
+#This code appends all of the individual University sports records documents into a single dataframe.
+for (i in teamRecords) {
+  recordsDataFrame<-rbind(recordsDataFrame,read.csv(paste0('footballRecords/',i)))
+}
+```
+
+
+```{r, echo=FALSE}
+#storing the names of all the SEC teams
+teamNames <- unique(recordsDataFrame$team)
+
+# These are exploratory data vectors. In order to identify the exact nomenclature for each university, any university with a similar name is identified. The renaming will come in the next step.
+Alabama <- unique(CollegeCompletion$chronname[grepl("University of Alabama", CollegeCompletion$chronname)])
+Arkansas <- unique(CollegeCompletion$chronname[grepl("University of Arkansas", CollegeCompletion$chronname)])
+Auburn <- unique(CollegeCompletion$chronname[grepl("Auburn", CollegeCompletion$chronname)])
+Florida <- unique(CollegeCompletion$chronname[grepl("University of Florida", CollegeCompletion$chronname)])
+Georgia <- unique(CollegeCompletion$chronname[grepl("Georgia", CollegeCompletion$chronname)])
+Mississippi <- unique(CollegeCompletion$chronname[grepl("Mississippi", CollegeCompletion$chronname)])
+Missouri <- unique(CollegeCompletion$chronname[grepl("Missouri", CollegeCompletion$chronname)])
+Carolina <- unique(CollegeCompletion$chronname[grepl("University of South Carolina", CollegeCompletion$chronname)])
+Texas <- unique(CollegeCompletion$chronname[grepl("Texas A&M University", CollegeCompletion$chronname)])
+Lousiana <- unique(CollegeCompletion$chronname[grepl("Louisiana State University", CollegeCompletion$chronname)])
+Ten <- unique(CollegeCompletion$chronname[grepl("University of Tennessee", CollegeCompletion$chronname)])
+```
+
+
+```{r, echo=FALSE}
+#storing the names of all the Universities in the SEC in a vector
+collegeNames <- c('University of Alabama at Tuscaloosa', 'University of Arkansas at Fayetteville', 'Auburn University', 'University of Florida','University of Georgia', 'University of Kentucky', 'Louisiana State University at Baton Rouge', 'Mississippi State University', 'University of Missouri at Columbia', 'University of Mississippi', 'University of South Carolina at Columbia', 'Texas A&M University at College Station', 'University of Tennessee at Knoxville', 'Vanderbilt University')
+```
+
+```{r, echo=FALSE}
+# Limiting all the colleges with graduation rates to just SEC schools.
+CollegeCompletion<-CollegeCompletion[CollegeCompletion$chronname %in% collegeNames,]
+
+#changing the names of all the universities to simply be the team name for easier merging.
+for(i in 1:length(collegeNames)){
+  CollegeCompletion$chronname[CollegeCompletion$chronname==collegeNames[i]] <- teamNames[i] 
+}
+
+CollegeCompletion <- CollegeCompletion[CollegeCompletion$grad_100_rate!='NULL',]
+
+#Here we adjust column names in order to match for a merge to final dataset.
+colnames(recordsDataFrame)[1]<-'year'
+colnames(recordsDataFrame)[2]<-'chronname'
+recordsDataFrame<-recordsDataFrame[recordsDataFrame$year>1997,]
+
+#Here we "widen" the dataset by converting the entries in some fields into their own factors. This will create a dataset where there is a single entry for each university in each year.
+
+#Full dataset merge.
+fullData<-merge(recordsDataFrame,CollegeCompletion, by=c('chronname','year'))
+
+fullData$chronname<-as.factor(fullData$chronname)
+fullData$grad_100_rate<-as.numeric(fullData$grad_100_rate)
+fullData$total.wins<-as.numeric(fullData$total.wins)
+fullData$total.games<-as.numeric(fullData$total.games)
+
+fullData$dummy<-1
+fullData$dummy1<-1
+fullData$dummy2<-1
+
+fullData = fullData %>% 
+  filter(cohort == '4y bach', cohort!='NULL', grad_100_rate != 'NULL',grad_100_rate!=0) %>%
+  select(year,cohort,chronname,gender,race,grad_100,grad_150,grad_100_rate,grad_150_rate,control,basic,flagship,long_x,lat_y,pell_value,pell_percentile,retain_value,retain_percentile,ft_fac_value,ft_fac_percentile,dummy,dummy1,dummy2,total.games,total.wins,total.losses) %>% 
+  drop_na() %>%
+    replace(is.na(.), 0)
+
+colnames(fullData) <- gsub(' ','.',colnames(fullData))
+colnames(fullData) <- gsub('&','.',colnames(fullData))
+
+
+
+widerData <-fullData[fullData$race!='A' & fullData$gender!='B',]
+widerData = widerData %>%
+  pivot_wider(names_from = chronname, values_from=dummy1) %>%
+ pivot_wider(names_from = c(gender,race), values_from=dummy, names_sep='.') %>% 
+ pivot_wider(names_from = control, values_from=dummy2)  %>%
+  replace(is.na(.), 0)
+
+colnames(widerData) <- gsub(' ','.',colnames(widerData))
+colnames(widerData) <- gsub('&','.',colnames(widerData))
+```
+
+# Research Question #1
+
+### Does a university football team's season record impact on time graduation rates on the student cohort?
+
+This question will form the central research question of our project. It will also represent the predictive portion of the project. 
+
+We will begin this analysis by engaging in some exploratory analysis. Summary statistics could provide a good basis for this, however given the emphasis of this course we will create some exploratory visualizations to begin to understand our data.
+
+```{r, echo=TRUE, warning=FALSE}
+
+
+#Exploratory Graph On Time Graduation Rates by Year*University
+
+allRaceallGender<-fullData[fullData$race=='A' & fullData$gender=='B',]
+
+onTimeGradbyUFigure <- plot_ly() %>% add_trace(x=allRaceallGender$year,y=allRaceallGender$grad_100_rate,type='scatter',color=allRaceallGender$chronname,mode='lines') %>% layout(title="On-time Graduation Rates by Year and University")
+
+onTimeGradbyUFigure
+```
+
+We will utilize standard least squares linear regression in order to generate predictions of cohort graduation rates across the SEC universities over time. Given that our response data (on-time graduation rates by student body) is continuous numerical data, and we have categorical and numeric inputs, linear regression is a reasonable choice to explore possible relationships in the data. Our covariates of interest will be:
+
+-Total football wins in a given year
+-Football win percentage in a given year
+-Student cohort by race/ethnicity
+-Student cohort by gender
+-Interaction effects between these co-variates
+-University attended
+-Possible time series implications (another research question)
+
+Variable selection will be selected using a step wise regression and adjusted R-squared. The limitations and bias of this method are acknowledged but given the course's focus on visualization as opposed to advanced analysis, it will likely produce acceptable research results.
+
+We will validate this research methodology by examining all underlying assumptions regarding the model particularly, constant variance of the error rate and observation independence. We will produce diagnostic charts like those below in order to confirm this as a reasonable analytic methodology. 
+
+```{r, include=TRUE, warning=FALSE}
+fullData<-fullData[fullData$race!='A' & fullData$gender!='B',]
+fullData$raceAndGender <- paste(fullData$race,fullData$gender)
+
+lm3 <- lm(fullData$grad_100_rate ~ fullData$total.wins + fullData$chronname + fullData$raceAndGender)
+
+#Here we will suppress the lm3 summary results in order to limit the document size.
+#summary(lm3)
+
+lm3ResidualsUniversity <- plot_ly() %>% add_trace(x=fitted(lm3),y=residuals(lm3),type='scatter',mode='markers', color=fullData$chronname) %>% layout(title="Model Residuals by University")
+
+lm3ResidualsUniversity
+
+lm3ResidualsRandG <- plot_ly() %>% add_trace(x=fitted(lm3),y=residuals(lm3),type='scatter',mode='markers', color=fullData$raceAndGender) %>% layout(title="Model Residuals by Race and Gender")
+
+lm3ResidualsRandG
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(lm3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+```
+
+# Research Question #2
+
+### Does the impact of the football team's record vary by University
+
+In this case we can add an interaction effect to the regression model. To do this we widen the data and use "dummy variables" to indicate each university. We can then multiply that University by its record to determine any interaction effect. Race and Gender are also widened in order explore intersectional effects in similar ways.
+
+```{r, include=TRUE, warning=FALSE}
+lm2 <- lm(widerData$grad_100_rate ~ widerData$total.wins + widerData$Alabama + widerData$Arkansas + widerData$Auburn + widerData$Florida + widerData$Georgia + widerData$Kentucky  + widerData$LSU + widerData$Mississippi.State + widerData$Missouri + widerData$Ole.Miss + widerData$South.Carolina + widerData$Tennessee + widerData$Texas.A.M + widerData$Vanderbilt + widerData$M.H + widerData$F.H + widerData$F.X + widerData$F.Ai + widerData$F.B +  widerData$F.W +  widerData$M.B + widerData$M.W +  widerData$M.X + widerData$M.Ai)
+
+#The summary is again suppressed in order to keep the report to a reasonable length.
+#summary(lm2)
+```
+
+As this is a visualization course we can also explore these relationships graphically. Below is one simple example, a scatter plot.
+
+```{r, include=TRUE, warning=FALSE}
+
+#Exploratory Graph On Time Graduation Rates by Football Record*University
+
+onTimeGradbyRecord <- plot_ly() %>% add_trace(x=(allRaceallGender$total.wins/allRaceallGender$total.games),y=allRaceallGender$grad_100_rate,type='scatter',color=allRaceallGender$chronname,mode='markers') %>% layout(title="On-time Graduation Rates by Football Record and University")
+
+onTimeGradbyRecord
+```
+
+# Research Question #3
+
+### Are there diversity/intersectional impacts specific to a football team's season record's impact on graduation rates or graduation rates in general?
+
+Similar to university level impacts, we are interested in wether demographics play a role in how a football team's record could influence on-time graduation. We can perform a nearly identical analysis as the University level.
+
+```{r, include=TRUE, warning=FALSE}
+
+lm1 <- lm(widerData$grad_100_rate ~ widerData$total.wins + widerData$Alabama + widerData$Arkansas + widerData$Auburn + widerData$Florida + widerData$Georgia + widerData$Kentucky  + widerData$LSU + widerData$Mississippi.State + widerData$Missouri + widerData$Ole.Miss + widerData$South.Carolina + widerData$Tennessee + widerData$Texas.A.M + widerData$Vanderbilt + widerData$M.H + widerData$F.H + widerData$F.X + widerData$F.Ai + widerData$F.B +  widerData$F.W +  widerData$M.B + widerData$M.W +  widerData$M.X + widerData$M.Ai + (widerData$total.wins * (widerData$M.H + widerData$F.H +  widerData$F.X + widerData$F.Ai +  widerData$F.B + widerData$F.W +  + widerData$M.B + widerData$M.W  + widerData$M.X + widerData$M.Ai)))
+
+#summary(lm1)
+
+#Exploratory Graph On Time Graduation Rates by Football Record*University
+
+onTimeGradbyRecord <- plot_ly() %>% add_trace(x=(fullData$total.wins/fullData$total.games),y=fullData$grad_100_rate,type='scatter',color=fullData$raceAndGender,mode='markers') %>% layout(title="On-time Graduation Rates by Football Record and Demographics")
+
+onTimeGradbyRecord
+```
+
+# Research Question #4
+
+### Does any impact by a University football season on graduation rates persist for multiple years for a class cohort?
+
+In order to investigate multiple year impacts, previous years records will be appended to the dataset and the regression will be run multiple times, using a stepwise regression algorithm and adjusted R-squared. An interactive feature could likely provide this input and measure the strength of the corresponding model.
+
+# Research Question #5
+
+### Is there a time series type correlation to graduation rates by cohort?
+
+In order to investigate any time series auto-regressive / moving average type impacts we will utilize an ARIMA type model. Some diagnostic plots associated with the ARIMA model may be used, but these are generally somewhat visually uninteresting for the casual observer. ARIMA can be applied before the regression and regression used afterward or ARIMA may be applied to residuals. For the purposes of interpret-ability we will apply the auto.arima() function to the residuals of our regression function in order to detect time series effect. 
+
+
+

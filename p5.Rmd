@@ -1,0 +1,117 @@
+---
+title: "Data Analysis Plan"
+author: "Paul Burslem, Chad Austgen, Arya Ramchandani"
+date: "3/31/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Interaction 1: Map Selection by University
+
+Interaction Method: A map of all Universities in the SEC will be displayed prominently in the visualization. A user will be able to select/deselect universities from the map in order to filter data by specific university(s), or compare multiple universities together. While selected the icon/symbol for the University will be highlighted.
+
+Range of Choices: All SEC Universities
+
+Outcomes/Events: The selection event will act as a filter for the various visualizations we are presenting:
+
+Descriptive Statistics Line Chart (Graduation by Year/Record): University cohorts will be added from and removed from the displayed dataset.
+Linear Regression Model Analytics: This will have no impact on this chart. 
+On Time Graduation Rate Scatter Plot:University cohorts will be added from and removed from the displayed dataset.
+On Time Graduation Rate Violin Plot:University cohorts will be added from and removed from the displayed dataset.
+Parallel Coordinate Chart: University cohorts will be added from and removed from the displayed dataset.
+
+
+Scenario (Why): This will be used when a user may be interested in one or multiple particular University’s datasets.
+
+# Interaction 2: Explanatory Plot Axis Change
+
+Interaction Method: A user will be able to select the X axis for our data visualizations between time and football record. This will be accomplished via radio button as one and only one selection will be appropriate. 
+
+Range of Choices: 
+Chronological
+By Football Record
+
+Outcomes/Events: 
+
+Descriptive Statistics Line Chart (Graduation by Year): None
+Linear Regression Model Analytics: None
+On Time Graduation Rate Scatter Plot: The x-axis will transition between chronological and by record order.
+On Time Graduation Rate Violin Plot: None
+Parallel Coordinate Chart: None
+
+Scenario (Why): This will enable the user to make comparisons chronologically as well as with regard to one of the variables of interest. 
+
+# Interaction 3: Date Range
+
+The user will be able to change the range of dates that will be included in the display. Adjusting the number entries will filter data to entries that lie inside the range. 
+
+Interaction Method: two number range boxes (begin and end)
+
+Range of Choices: The range of choices will include every year that contains data. The “begin” box will be restricted to less than or equal to the “end” box.
+
+Outcomes/Events: 
+
+Descriptive Statistics Line Chart (Graduation by Year): Years will be included/excluded by selection.
+Linear Regression Model Analytics: The regression will be rerun when the selection is made. Corresponding statistics and diagnostic plots will be provided reflecting the strength and appropriateness of the regression.
+On Time Graduation Rate Scatter Plot: Included data will be filtered by selection.
+On Time Graduation Rate Violin Plot: Included data will be filtered by selection.
+Parallel Coordinate Chart: Included data will be filtered by selection.
+
+Scenario (Why): This will be useful to the user when they are interested in only a certain range of time, whether that is one year, or multiple years. 
+
+# Interaction 4: Categorical Disaggregation
+
+The user will be able to select data to be aggregated or disaggregated by factor throughout all of the data visualizations present. For example A user would likely want to begin by viewing a simple plot of the school cohort in its entirety. This reflects Shneiderman’s visualization mantra: overview first followed by filter. The user could then chose to have data broken out by race or gender.
+
+Interaction Method: Two sets of checkboxes will be available to filter cohorts by race and gender.
+
+Range of Choices: Race: Asian, Black, Hispanic, Non-Hispanic White, All; Gender: Male, Female, Both.
+
+Outcomes/Events: 
+
+Descriptive Statistics Line Chart (Graduation by Year): Chart outcomes will be adjusted by filtered cohorts.
+Linear Regression Model Analytics: The regression will be rerun with the selected factors as covariates. Corresponding statistics and diagnostic plots will be provided reflecting the strength and appropriateness of the regression.
+On Time Graduation Rate Scatter Plot: Symbols and colors will be utilized to represent intersectional cohorts. The chart will add or subtract symbols depending on the selection.
+On Time Graduation Rate Violin Plot:Chart outcomes will be adjusted by filtered cohorts.
+Parallel Coordinate Chart: Chart outcomes will be adjusted by filtered cohorts.
+
+
+Scenario (Why): There may be demographic impacts on our primary research question. This aggregation/disaggregation would allow a user to visually explore those impacts.
+
+# Interaction 5: Time Persistence Effect:
+
+Interaction Method: A set of 5 radio buttons.
+
+Range of Choices: {0,1,2,3,4}
+
+Outcomes/Events: 
+
+Descriptive Statistics Line Chart (Graduation by Year): None
+Linear Regression Model Analytics: The regression will be rerun with previous years football record as numerical variables. Corresponding statistics and diagnostic plots will be provided reflecting the strength and appropriateness of the regression.
+On Time Graduation Rate Scatter Plot: None
+On Time Graduation Rate Violin Plot: None
+Parallel Coordinate Chart: None
+
+Scenario (Why): This experiment could help to answer the research question, “how long does the impact of football records persist on graduation rates?”
+
+# Interaction 6: Visualization Selection (May not be required)
+
+The user will be able to select which visualization to view at any one time. This may become necessary if too many charts/products crowd the overall visualization.
+
+Interaction Method: Dropdown
+
+Range of Choices: 
+Linear Regression Model Analytics
+On Time Graduation Rate Scatter Plot
+On Time Graduation Rate Violin Plot
+Parallel Coordinate Chart
+
+Outcomes/Events: 
+Descriptive Statistics Line Chart (Graduation by Year): No effect
+Linear Regression Model Analytics: This chart would be visualized in the space or not depending on selection.
+On Time Graduation Rate Scatter Plot: This chart would be visualized in the space or not depending on selection.
+On Time Graduation Rate Violin Plot: This chart would be visualized in the space or not depending on selection.
+Parallel Coordinate Chart: This chart would be visualized in the space or not depending on selection.
+
+Scenario (Why): The visualization may become very crowded, detracting from its aesthetic. Some users may not care much about some visualizations such as regression analytics. This will allow for a more custom and clean visualization experience.

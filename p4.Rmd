@@ -1,7 +1,7 @@
 ---
 title: "Data Analysis Plan"
 author: "Paul Burslem, Chad Austgen, Arya Ramchandani"
-date: "2/19/2022"
+date: "3/23/2022"
 output:
   html_document: default
   pdf_document: default
@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(tidyr)
 library(plotly)
-#setwd(shortPathName('C:\\Users\\craustgen\\Documents\\Project\\Data-Visualization'))
+setwd('/home/paul/vist-stat/Data-Visualization')
 ```
 
   
@@ -112,7 +112,7 @@ colnames(widerData) <- gsub('&','.',colnames(widerData))
 
 # Research Question #1
 
-### Does a university football team's season record impact on time graduation rates on the student cohort?
+### Does a university football team's season record impact the on-time graduation rates of the student cohort?
 
 This question will form the central research question of our project. It will also represent the predictive portion of the project. 
 
@@ -130,15 +130,17 @@ onTimeGradbyUFigure <- plot_ly() %>% add_trace(x=allRaceallGender$year,y=allRace
 onTimeGradbyUFigure
 ```
 
-We will utilize standard least squares linear regression in order to generate predictions of cohort graduation rates across the SEC universities over time. Given that our response data (on-time graduation rates by student body) is continuous numerical data, and we have categorical and numeric inputs, linear regression is a reasonable choice to explore possible relationships in the data. Our covariates of interest will be:
+We will utilize standard least squares linear regression in order to generate predictions of cohort graduation rates across the SEC universities over time. Given that our response data (on-time graduation rates by student body) is continuous numerical data, and we have categorical and numeric inputs, linear regression is a reasonable choice to explore possible relationships in the data. We have also explored the normalcy of our datasets and find them to be acceptably normal to satisfy the underlying assumption. Our covariates of interest will be:
 
--Total football wins in a given year
--Football win percentage in a given year
--Student cohort by race/ethnicity
--Student cohort by gender
--Interaction effects between these co-variates
--University attended
--Possible time series implications (another research question)
+- Total football wins in a given year
+- Football win percentage in a given year
+- Student cohort by race/ethnicity
+- Student cohort by gender
+- Interaction effects between these co-variates
+- University attended
+- Time series implications (another research question)
+
+Additionally linear regression is an obvious choice to satisfy the project need of a predictive type of analysis.
 
 Variable selection will be selected using a step wise regression and adjusted R-squared. The limitations and bias of this method are acknowledged but given the course's focus on visualization as opposed to advanced analysis, it will likely produce acceptable research results.
 
@@ -180,7 +182,7 @@ lm2 <- lm(widerData$grad_100_rate ~ widerData$total.wins + widerData$Alabama + w
 #summary(lm2)
 ```
 
-As this is a visualization course we can also explore these relationships graphically. Below is one simple example, a scatter plot.
+As this is a visualization course we can also explore these relationships graphically. Below is one simple example, a scatter plot. This is an appropriate 
 
 ```{r, include=TRUE, warning=FALSE}
 
@@ -210,11 +212,15 @@ onTimeGradbyRecord <- plot_ly() %>% add_trace(x=(fullData$total.wins/fullData$to
 onTimeGradbyRecord
 ```
 
+We are also considering the use of a violin plot. A violin plot makes sense as we have multiple observations across man intersectional categories of race/university and the binary categorical variable of gender. 
+
+A heat map which selects for two of the categorical variables, Race, Gender, and University may also be appropriate as a single continuous numeric dependent variable exists.
+
 # Research Question #4
 
 ### Does any impact by a University football season on graduation rates persist for multiple years for a class cohort?
 
-In order to investigate multiple year impacts, previous years records will be appended to the dataset and the regression will be run multiple times, using a stepwise regression algorithm and adjusted R-squared. An interactive feature could likely provide this input and measure the strength of the corresponding model.
+In order to investigate multiple year impacts, previous years records will be appended to the dataset and the regression will be run multiple times, using a stepwise regression algorithm and adjusted R-squared. An interactive feature could allow a user to test different time values for enduring impact and return the strength of the corresponding model.
 
 # Research Question #5
 
@@ -222,5 +228,5 @@ In order to investigate multiple year impacts, previous years records will be ap
 
 In order to investigate any time series auto-regressive / moving average type impacts we will utilize an ARIMA type model. Some diagnostic plots associated with the ARIMA model may be used, but these are generally somewhat visually uninteresting for the casual observer. ARIMA can be applied before the regression and regression used afterward or ARIMA may be applied to residuals. For the purposes of interpret-ability we will apply the auto.arima() function to the residuals of our regression function in order to detect time series effect. 
 
-
+As a visualization we plan to incorporate a parallel coordinate chart which displays the model residuals over several years. This will be an appropriate visualization as periodicity 1 time series will tend to have residuals across time that are near to parallel.
 

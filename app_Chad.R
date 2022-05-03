@@ -1,5 +1,7 @@
 library(shiny)
 
+setwd("C:\\Users\\CRAUST~1\\DOCUME~1\\GitHub\\DATA-V~1")
+
 possibleSchools <- list("alabama", "auburn", "TAMU")
 possibleSchoolVals <- list(1, 2, 3)
 axisChoices <- list("Time", "Record")

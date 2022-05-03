@@ -108,6 +108,9 @@ widerData = widerData %>%
 
 colnames(widerData) <- gsub(' ','.',colnames(widerData))
 colnames(widerData) <- gsub('&','.',colnames(widerData))
+
+write.csv(widerData, 'widerData.csv')
+write.csv(fullData, 'fullData.csv')
 ```
 
 # Research Question #1

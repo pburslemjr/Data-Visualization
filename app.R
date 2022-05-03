@@ -1,5 +1,7 @@
 library(shiny)
 
+setwd("C:\\Users\\CRAUST~1\\DOCUME~1\\GitHub\\DATA-V~1")
+
 possibleSchools <- list("alabama", "auburn", "TAMU")
 possibleSchoolVals <- list(1, 2, 3)
 axisChoices <- list("Time", "Record")
@@ -46,7 +48,13 @@ fluidRow(column(width = 12,
 )
 
 server <- function(input, output){
+
   
+  fullData<-read.csv('fullData.csv')
+  widerData<-read.csv('widerData.csv')
+  
+
+    
   races <- reactive({
     Ai <- as.numeric(is.element('a', input$activeRaces))
     B <- as.numeric(is.element('b', input$activeRaces))
@@ -64,6 +72,13 @@ server <- function(input, output){
     B <- as.numeric(length(input$activeGenders) == 2)
     data.frame(M, F, B)
   })
+  
+  
+  plotData <- reactive({
+    subset(fullData, 
+           fullData$race %in% races()[races()[,2]==1,1] & fullData$gender %in% gender()[gender()[,2]==1,1])
+  })
+  
   
   output$map <- renderPlot({
     hist(rnorm(10))}

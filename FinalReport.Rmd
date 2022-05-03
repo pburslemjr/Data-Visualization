@@ -1,0 +1,39 @@
+---
+title: "Report"
+author: "Paul Burslem, Chad Austgen, Arya Ramchandani"
+date: "5/3/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(jsonlite)
+library(httr)
+library(dplyr)
+```
+
+
+## Load R Packages & Set Working Directory
+
+
+## Introduction
+
+Enter our introduction here.
+
+## Visualization Design
+
+TODO
+
+## Methodology
+
+TODO
+
+## Evaluation Plan
+
+TODO
+
+## Discussions & Future Work
+
+TODO
+
+## Works Cited

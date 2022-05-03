@@ -82,7 +82,7 @@ server <- function(input, output, session){
        values$selected <- temp
        print(values$selected)
        removeMarker(map = mapProxy, layerId = values$selected$name[index])
-       addAwesomeMarkers(map = mapProxy, lng = geocoded$lon[index], lat = geocoded$lat[index], layerId = values$selected$name[index], 
+       addAwesomeMarkers(map = mapProxy, lng = geocoded$lon[index], lat = geocoded$lat[index], popup = values$selected$name[index], layerId = values$selected$name[index], 
                          icon = awesomeIcons(
                          icon = 'ios-close',
                          iconColor='white',
@@ -100,7 +100,7 @@ server <- function(input, output, session){
        print(values$selected)
        
        removeMarker(map = mapProxy, layerId = values$selected$name[index])
-       addAwesomeMarkers(map = mapProxy, lng = geocoded$lon[index], lat = geocoded$lat[index], layerId = values$selected$name[index], 
+       addAwesomeMarkers(map = mapProxy, lng = geocoded$lon[index], lat = geocoded$lat[index], popup = values$selected$name[index], layerId = values$selected$name[index], 
                          icon = awesomeIcons(
                            icon = 'ios-open',
                            iconColor='white',

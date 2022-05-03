@@ -1,7 +1,19 @@
 library(shiny)
 library(plotly)
+library(leaflet)
 
-setwd("C:\\Users\\CRAUST~1\\DOCUME~1\\GitHub\\DATA-V~1")
+# setwd("C:\\Users\\CRAUST~1\\DOCUME~1\\GitHub\\DATA-V~1")
+
+name <- c('University of Alabama at Tuscaloosa', 
+          'University of Arkansas at Fayetteville', 'Auburn University', 'University of Florida','University of Georgia', 'University of Kentucky', 'Louisiana State University at Baton Rouge', 'Mississippi State University', 'University of Missouri at Columbia', 'University of Mississippi', 'University of South Carolina at Columbia', 'Texas A&M University at College Station', 'University of Tennessee at Knoxville', 'Vanderbilt University')
+layerID <- c('Alabama', 'Arkansas', 'Auburn', 'Florida', 'Georgia', 'Kentucky', 'LSU', 'Mississippi State', 'Missouri', 'Ole Miss', 'South Carolina', 'Texas A&M', 'Tennessee', 'Vanderbilt')
+lat <- c(33.21402, 36.06869, 32.59336, 29.64363, 33.94801, 38.03065, 30.41326, 33.45517, 38.94038, 34.36473, 33.99376, 30.60661, 35.95440, 36.14470)
+lon <- c(-87.53914, -94.17485, -85.49517, -82.35493, -83.37732, -84.50397, -91.18000, -88.79438, -92.32774, -89.53838, -81.02992, -96.35684, -83.92946, -86.80266)
+
+geocoded <- data.frame(name, lon, lat, layerID)
+
+selectedSchools <-data.frame(name=geocoded$layerID, clicked=1)
+
 
 possibleSchools <- list("alabama", "auburn", "TAMU")
 possibleSchoolVals <- list(1, 2, 3)
@@ -14,7 +26,9 @@ possibleGenders <- list("Male", "Female")
 genderVals <- list("m", "f")
 
 
-ui <- fluidPage(tags$head(
+ui <- fluidPage(
+  leafletOutput("my_leaf", width="100%", height=400),
+  tags$head(
   tags$style(HTML('.shiny-split-layout>div {overflow: hidden;}')),
 ),
 fluidRow(column(width = 12, 
@@ -48,14 +62,76 @@ fluidRow(column(width = 12,
   
 )
 
-server <- function(input, output){
+server <- function(input, output, session){
 
   
   fullData<-read.csv('fullData.csv')
   widerData<-read.csv('widerData.csv')
   
-
+  values <- reactiveValues(selected = selectedSchools)
+  mapProxy <- leafletProxy(mapId = "my_leaf", session)
+  
+  observeEvent(input$my_leaf_marker_click, 
+   {
+     index <- which(values$selected$name == input$my_leaf_marker_click$id)
+     
+     if(values$selected$clicked[index] == 1)
+     {
+       values$selected$clicked[index] <- 0
+       temp <- values$selected
+       values$selected <- temp
+       print(values$selected)
+       removeMarker(map = mapProxy, layerId = values$selected$name[index])
+       addAwesomeMarkers(map = mapProxy, lng = geocoded$lon[index], lat = geocoded$lat[index], layerId = values$selected$name[index], 
+                         icon = awesomeIcons(
+                         icon = 'ios-close',
+                         iconColor='white',
+                         library = 'ion',
+                         markerColor = 'red'
+                         ))
+       
+     }
+     else
+     {
+       
+       values$selected$clicked[index] <- 1
+       temp <- values$selected
+       values$selected <- temp
+       print(values$selected)
+       
+       removeMarker(map = mapProxy, layerId = values$selected$name[index])
+       addAwesomeMarkers(map = mapProxy, lng = geocoded$lon[index], lat = geocoded$lat[index], layerId = values$selected$name[index], 
+                         icon = awesomeIcons(
+                           icon = 'ios-open',
+                           iconColor='white',
+                           library = 'ion',
+                           markerColor = 'blue'
+                         ))
+       
+     }
+     
+     
+   })
+  
+  output$my_leaf <- renderLeaflet({
     
+    leaflet(geocoded, selectedSchools) %>%
+      addTiles()%>%
+      addMarkers(~lon, ~lat, layerId = ~layerID, popup = ~name) %>%
+      # addTiles(providers$OpenStreetMap, group='Hydda.Full') %>%
+      setView(lat = 35.1, lng = -90.3, zoom = 5)
+    # add()
+    
+    
+  })
+  
+  finalNames <- reactive({
+    names <- values$selected$name
+    clicked <- values$selected$clicked
+    data.frame(names, clicked)
+    
+  })
+  
   races <- reactive({
     Ai <- as.numeric(is.element('a', input$activeRaces))
     B <- as.numeric(is.element('b', input$activeRaces))
@@ -73,7 +149,8 @@ server <- function(input, output){
     B <- as.numeric(length(input$activeGenders) == 2)
     data.frame(M, F, B)
   })
-      
+    
+
   plotData <- reactive({
     subset(fullData, 
            fullData$race %in% races()[races()[,2]==1,1] & fullData$gender %in% genders()[genders()[,2]==1,1])
@@ -81,8 +158,10 @@ server <- function(input, output){
   
   plotDataLine <- reactive({
     subset(fullData, 
-           fullData$race == 'A' & fullData$gender == 'B')
+           fullData$race == 'A' & fullData$gender == 'B' & fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1])
+    
   })
+  
   
   
   output$map <- renderPlot({
@@ -109,6 +188,8 @@ server <- function(input, output){
   output$coordinate_data <- renderPlot(
     hist(rnorm(10))
   )
+  
+  
 
   #Visualization 1
   #Change x based on dateRange (begin and end)

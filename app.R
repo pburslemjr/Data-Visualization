@@ -21,20 +21,22 @@ axisChoices <- list("Time", "Record")
 
 possibleRaces <- list("Asian", "Black", "Hispanic", "Non-Hispanic", "White")
 raceVals <- list("a", "b", "h", "n", "w")
+races <-  list("Ai", "B", "H", "X", "W")
 
 possibleGenders <- list("Male", "Female")
 genderVals <- list("m", "f")
+genders <- list("M", "F")
 
 
 ui <- fluidPage(
-  leafletOutput("my_leaf", width="100%", height=400),
+  
   tags$head(
     tags$style(HTML('.shiny-split-layout>div {overflow: hidden;}')),
   ),
-  fluidRow(column(width = 12, 
-                  plotOutput("map"))),
+  fluidRow(column(width = 12, style='padding:20px;', 
+                  leafletOutput("my_leaf", width="100%", height=400))),
   fluidRow(
-    column(width = 12,
+    column(width = 12, 
            splitLayout(
              verticalLayout(
                plotlyOutput("line_data"),
@@ -51,9 +53,9 @@ ui <- fluidPage(
     column(width = 4,
            radioButtons("activeXAxis", "Axis", choices = axisChoices)),
     column(width = 4,
-           checkboxGroupInput("activeRaces", "Select Race", choiceNames = possibleRaces, choiceValues = raceVals)),
+           checkboxGroupInput("activeRaces", "Select Race", choiceNames = possibleRaces, choiceValues = races, selected = races)),
     column(width = 4,
-           checkboxGroupInput("activeGenders", "Select Genders", choiceNames = possibleGenders, choiceValues = genderVals)),
+           checkboxGroupInput("activeGenders", "Select Genders", choiceNames = possibleGenders, choiceValues = genders, selected = genders)),
     column(width = 6,
            numericInput("dateRangeBegin", "Begin", value = 1950)),
     column(width = 6,
@@ -252,25 +254,50 @@ server <- function(input, output, session){
   })
   
   races <- reactive({
-    Ai <- as.numeric(is.element('a', input$activeRaces))
-    B <- as.numeric(is.element('b', input$activeRaces))
-    H <- as.numeric(is.element('h', input$activeRaces))
-    X <- as.numeric(is.element('n', input$activeRaces))
-    W <- as.numeric(is.element('w', input$activeRaces))
-    A <- as.numeric(length(input$activeRaces) == 5)
-    data.frame(Ai, B, H, X, W, A)
-    
+    if (length(input$activeRaces) == 5)
+    {
+      append(input$activeRaces, "A")
+    } else
+    {
+      input$activeRaces
+    }
   })
   
   genders <- reactive({
-    M <- as.numeric(is.element('m', input$activeGenders))
-    F <- as.numeric(is.element('f', input$activeGenders))
-    B <- as.numeric(length(input$activeGenders) == 2)
-    data.frame(M, F, B)
+    if (length(input$activeGenders) == 2)
+    {
+      
+      append(input$activeGenders, "B")
+      input$activeGenders
+    } else
+    {
+      input$activeGenders
+      
+    }
   })
   
   
+  # races <- reactive({
+  #   Ai <- as.numeric(is.element('a', input$activeRaces))
+  #   B <- as.numeric(is.element('b', input$activeRaces))
+  #   H <- as.numeric(is.element('h', input$activeRaces))
+  #   X <- as.numeric(is.element('n', input$activeRaces))
+  #   W <- as.numeric(is.element('w', input$activeRaces))
+  #   A <- as.numeric(length(input$activeRaces) == 5)
+  #   data.frame(Ai, B, H, X, W, A)
+  #   
+  # })
+  # 
+  # genders <- reactive({
+  #   M <- as.numeric(is.element('m', input$activeGenders))
+  #   F <- as.numeric(is.element('f', input$activeGenders))
+  #   B <- as.numeric(length(input$activeGenders) == 2)
+  #   data.frame(M, F, B)
+  # })
+  
+  
   plotData <- reactive({
+    print(input$activeGenders)
     subset(fullData, 
            fullData$race %in% races()[races()[,2]==1,1] & fullData$gender %in% genders()[genders()[,2]==1,1])
   })
@@ -284,6 +311,7 @@ server <- function(input, output, session){
   
   
   output$map <- renderPlot({
+    gendersFunc()
     hist(rnorm(10))}
   )
   
@@ -345,4 +373,5 @@ server <- function(input, output, session){
   #   
   # )
 }
+
 shinyApp(ui = ui, server = server)

@@ -47,18 +47,18 @@ fluidRow(column(width = 12,
       )
     )
   ),
-  fluidRow (
-    column(width = 4,
-       radioButtons("activeXAxis", "Axis", choices = axisChoices)),
-    column(width = 4,
-       checkboxGroupInput("activeRaces", "Select Race", choiceNames = possibleRaces, choiceValues = raceVals)),
-    column(width = 4,
-       checkboxGroupInput("activeGenders", "Select Genders", choiceNames = possibleGenders, choiceValues = genderVals)),
-    column(width = 6,
-       numericInput("dateRangeBegin", "Begin", value = 1950)),
-    column(width = 6,
-       numericInput("dateRangeEnd", "End", value = 2022))
-    )
+fluidRow (
+  column(width = 4,
+         radioButtons("activeXAxis", "Axis", choices = axisChoices)),
+  column(width = 4,
+         checkboxGroupInput("activeRaces", "Select Race", choiceNames = possibleRaces, choiceValues = raceVals, selected = raceVals)),
+  column(width = 4,
+         checkboxGroupInput("activeGenders", "Select Genders", choiceNames = possibleGenders, choiceValues = genderVals, selected = genderVals)),
+  column(width = 6,
+         numericInput("dateRangeBegin", "Begin", value = 1950)),
+  column(width = 6,
+         numericInput("dateRangeEnd", "End", value = 2022))
+)
   
 )
 
@@ -176,18 +176,30 @@ server <- function(input, output, session){
   
   lm3 <- lm(fullData$grad_100_rate ~ fullData$total.wins + fullData$chronname + fullData$raceAndGender)
 
-  plotDataScatter <- reactive({
-    fullData[fullData$race %in% races()[races()[,2]==1,1] & 
-                  fullData$gender %in% genders()[genders()[,2]==1,1] & 
-                  fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1],] 
-  })
+  # plotDataScatter <- reactive({
+  #   fullData[fullData$race %in% races()[races()[,2]==1,1] & 
+  #                 fullData$gender %in% genders()[genders()[,2]==1,1] & 
+  #                 fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1],] 
+  # })
   
-  plotDatafitted <- reactive({
-    fitted(lm3)[fullData$race %in% races()[races()[,2]==1,1] & 
-                  fullData$gender %in% genders()[genders()[,2]==1,1] & 
-                  fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1]] 
-
+  scatterIndex<-reactive({
+    (fullData$race %in% races()[,1] & 
+               fullData$gender %in% genders()[,1]) 
   })
+  plotDataScatter <- reactive({
+     fullData[scatterIndex(),] 
+   })
+  
+  # plotDatafitted <- reactive({
+  #   fitted(lm3)[fullData$race %in% races()[races()[,2]==1,1] & 
+  #                 fullData$gender %in% genders()[genders()[,2]==1,1] & 
+  #                 fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1]] 
+  # 
+  # })
+     
+plotDatafitted <- reactive({
+  fitted(lm3)[scatterIndex]  
+      })
   
   output$scatter_data <- renderPlotly(
     

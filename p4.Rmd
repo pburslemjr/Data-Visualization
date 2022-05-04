@@ -162,7 +162,7 @@ lm3ResidualsUniversity <- plot_ly() %>% add_trace(x=fitted(lm3),y=residuals(lm3)
 
 lm3ResidualsUniversity
 
-lm3ResidualsRandG <- plot_ly() %>% add_trace(x=fitted(lm3),y=residuals(lm3),type='scatter',mode='markers', color=fullData$raceAndGender) %>% layout(title="Model Residuals by Race and Gender")
+lm3ResidualsRandG <- plot_ly() %>% add_trace(x=fullData$total.wins,y=fitted(lm3),type='scatter',mode='markers', color=fullData$raceAndGender) %>% layout(title="Model Residuals by Race and Gender")
 
 lm3ResidualsRandG
 
@@ -170,6 +170,8 @@ par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
 plot(lm3)
 par(mfrow=c(1,1)) # Change back to 1 x 1
 
+
+predictionFrame<-data.frame(fitted(lm3),fullData$total.wins)
 ```
 
 # Research Question #2

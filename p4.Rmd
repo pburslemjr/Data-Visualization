@@ -183,6 +183,27 @@ lm2 <- lm(widerData$grad_100_rate ~ widerData$total.wins + widerData$Alabama + w
 
 #The summary is again suppressed in order to keep the report to a reasonable length.
 #summary(lm2)
+
+
+
+  grad_100_rate<-seq(from=0, to=1, by = 0.025)
+  total.wins<-seq(from=0, to=15, by=1)
+  genderSim<-c('M','F','B')
+  raceSim<-c('Ai','B','H','X','W','A')
+  chronname<-layerID
+  simdata<-expand.grid(grad_100_rate,total.wins,genderSim,raceSim,chronname)
+  colnames(simdata)<-c('grad_100_rate','total.wins','genderSim','raceSim','chronname')
+  simdata$raceAndGender<-paste(simdata$raceSim,simdata$genderSim)
+  
+
+  lm3 <-lm(data=fullData, grad_100_rate ~ total.wins + chronname + raceAndGender)
+
+  simdata.predict<- predict(lm3, newdata=simdata)
+  
+    predictionFrame<- cbind(simdata,simdata.predict)
+  
+  
+  
 ```
 
 As this is a visualization course we can also explore these relationships graphically. Below is one simple example, a scatter plot. This is an appropriate 

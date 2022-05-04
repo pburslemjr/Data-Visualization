@@ -50,16 +50,14 @@ ui <- fluidPage(
     )
   ),
   fluidRow (
-    column(width = 4,
-           radioButtons("activeXAxis", "Axis", choices = axisChoices)),
-    column(width = 4,
+    column(width = 6,
            checkboxGroupInput("activeRaces", "Select Race", choiceNames = possibleRaces, choiceValues = races, selected = races)),
-    column(width = 4,
+    column(width = 6,
            checkboxGroupInput("activeGenders", "Select Genders", choiceNames = possibleGenders, choiceValues = genders, selected = genders)),
     column(width = 6,
-           numericInput("dateRangeBegin", "Begin", value = 1950)),
+           numericInput("dateRangeBegin", "Begin", value = 2002, min = 2002, max = 2013)),
     column(width = 6,
-           numericInput("dateRangeEnd", "End", value = 2022))
+           numericInput("dateRangeEnd", "End", value = 2013, min = 2002, max = 2013))
   )
   
 )
@@ -276,6 +274,14 @@ server <- function(input, output, session){
       input$activeGenders
       
     }
+  })
+  
+  observeEvent(input$dateRangeEnd, {
+    updateNumericInput(inputId = "dateRangeBegin", max = input$dateRangeEnd - 1)
+  })
+  
+  observeEvent(input$dateRangeBegin, {
+    updateNumericInput(inputId = "dateRangeEnd", min = input$dateRangeBegin + 1)
   })
   
   

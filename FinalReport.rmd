@@ -87,22 +87,16 @@ This visualization will offer a high level resolution of the currently selected 
 
 
 
-#### Visualization 3: On Time Graduation Rate Scatter Plot
+#### Visualization 3 & 4: Predictive Scatterplot by University
 The content of this visualization will contain data points relating either the year or the school record to the graduation rate of the university. By adjusting the university checkbox group and changing the date range slider, which colleges and when will be adjusted accordingly. This visualization was selected because we want the user to be able to determine what trends exist from a certain level of precision: did sports records only correlate to graduation rates before a certain year? Or only for certain colleges? Differences in these parameters could really affect the results of the graph.  
 ![Visualization 3](./images/4.png){width=50%}
 ![Visualization 3](./images/5.png){width=50%}
 
 
-#### Visualization 4: On Time Graduation Rate Violin Plot
-ipsum delor etc  
+#### Visualization 5: On Time Graduation Rate Violin Plot
+This chart provides side by side comparisons on a Uuniversity by university basis of the distribution of on time graduation, separated by Gender, linked to total football wins. We believe this is a very effective visualization as the width of the segments make very obvious differences in potential correlations.
 
-![Visualization 4](./images/6.png){width=50%}  
-
-
-
-#### Visualization 5: Parallel Coordinate Chart
-This visualization will be used to show the relationship between the different variables we are observing: including year, graduation rate, record, etc. This visualization will be useful to detect differences in relationships between different variables between only a few schools, as selected by the multi-checkbox group. For example, for one school you might see a strong correlation between year and graduation rate, and a much weaker correlation in a different school.  
-![Visualization 5](./images/7.png){width=50%}  
+![Visualization 5](./images/6.png){width=50%}  
 
 
 #### Methodology and Evaluation
@@ -111,19 +105,20 @@ In this section we will break up each research question and discuss how the visu
 
 
 1. Is there a positive correlation between college sports teams and graduation rates?
+There is in fact a significant correlation between college football wins and graduation rates. The relationship was positive and significant to pvalue<0.001. We found this result to be extremely surprising given that our subject of study was chosen more for our own enjoyment than to pursue a likely conclusion.
 
-2. Is there a correlation between college admission rates and college sports records?
-3. Is there a time series component for graduation rates? Does that vary over time?
-4. Is there a relationship between cost of attendance and sports teams revenue?
-5. If sports team performance does have an impact on academic performance, how long does this last?
+2. Is there a time series component for graduation rates? Does that vary over time?
+Our visualizations did not suggest a significant change in these relationships over time. We were able to vary our visualizations over time and examine changes in the plots to determine this. 
 
-## Evaluation Plan
+3. Does the impact of college sports records on graduation rates vary by university?
+We did not find significant interaction between the University and the impact of football wins on the on-time graduation rate. We included an interaction effect in some of our early regression analysis and found no significant impact. More, the violin plots tell a compelling story about potential interaction effects.
 
-TODO
+5. Are there diversity/intersectional impacts specific to a football team's season record's impact on graduation rates or graduation rates in general?
+While there are significant difference across demographics, we also did not find a significant interaction between the impact of football wins and demographic information on on-time graduation rates. We included an interaction effect in some of our early regression analysis and found no significant impact. And again, the violin plots tell a compelling story about potential interaction effects.
 
 ## Discussions & Future Work
 
-
+Overall we found that the greatest challenge in this portion of the project was mastery of the shiny interactive architexture. Significant time was spent learning the in's and outs of reactivity and input/output architexture. We found the results of our work extremely surprising and a causal analysis at the sociological or psychological level could be an interesting further research direction to determine if our results were coincidental or if there are specific elements which could be used to help a university encourage on-time graduation.
 
 ## Works Cited
 

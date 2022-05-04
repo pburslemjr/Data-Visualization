@@ -40,11 +40,11 @@ ui <- fluidPage(
            splitLayout(
              verticalLayout(
                plotlyOutput("line_data"),
-               plotOutput("scatter_data"), 
+               plotlyOutput("scatter_data"), 
              ),
              verticalLayout(
-               plotOutput("violin_data"),
-               plotOutput("coordinate_data")
+               plotlyOutput("violin_data"),
+               plotlyOutput("coordinate_data")
              )
            )
     )
@@ -190,8 +190,10 @@ server <- function(input, output, session){
   
   
   
+  
   fullData<-read.csv('fullData.csv')
   widerData<-read.csv('widerData.csv')
+  fullData$raceAndGender <- paste(fullData$race,fullData$gender)
   
   values <- reactiveValues(selected = selectedSchools)
   mapProxy <- leafletProxy(mapId = "my_leaf", session)
@@ -296,24 +298,12 @@ server <- function(input, output, session){
   # })
   
   
-  plotData <- reactive({
-    print(input$activeGenders)
-    subset(fullData, 
-           fullData$race %in% races()[races()[,2]==1,1] & fullData$gender %in% genders()[genders()[,2]==1,1])
-  })
+  ###### Line 1 ######
   
   plotDataLine <- reactive({
     subset(fullData, 
            fullData$race == 'A' & fullData$gender == 'B' & fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1])
-    
   })
-  
-  
-  
-  output$map <- renderPlot({
-    gendersFunc()
-    hist(rnorm(10))}
-  )
   
   output$line_data <- renderPlotly(
     plot_ly() %>% 
@@ -324,16 +314,93 @@ server <- function(input, output, session){
                 mode='lines') %>% layout(title="On-time Graduation Rates by Year and University")
   )
   
-  output$scatter_data <- renderPlot(
-    hist(rnorm(10))
+  ###### Scatter 1 ######
+  
+  lm3 <- lm(fullData$grad_100_rate ~ fullData$total.wins + fullData$chronname + fullData$raceAndGender)
+  
+  scatterIndex<-reactive({
+    (fullData$race %in% races()& 
+       fullData$gender %in% genders() &
+       fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1]) 
+  })
+    
+  plotDataScatter <- reactive({
+    fullData[scatterIndex(),]
+  })
+
+  plotDatafitted <- reactive({
+    fitted(lm3)[scatterIndex()]  
+  })
+  
+  axisCh<-c("Time","Record")
+  realAxis<-c("year","total.wins")
+  axisChooser<-data.frame(axisCh,realAxis)
+  i<- reactive({
+    axisChooser[axisChooser$axisCh==input$activeXAxis,2]
+  })
+  output$scatter_data <- renderPlotly(
+    
+    plot_ly() %>% 
+      add_trace(x=plotDataScatter()$total.wins,
+                y=plotDatafitted(),
+                type='scatter',
+                mode='markers', 
+                color=plotDataScatter()$chronname)%>% 
+      layout(title="Model Predictions by University")
+    
   )
   
-  output$violin_data <- renderPlot(
-    hist(rnorm(10))
+  output$violin_data <- renderPlotly(
+    fig <- plotDataScatter() %>%
+      plot_ly(type = 'violin')  %>%
+      
+      add_trace(
+        x = ~chronname[plotDataScatter()$gender == 'M'],
+        y = ~total.wins[plotDataScatter()$gender == 'M'],
+        legendgroup = 'M',
+        scalegroup = 'M',
+        width=plotDataScatter()$grad_100_rate[plotDataScatter()$gender == 'M'],
+        name = 'M',
+        box = list(
+          visible = T
+        ),
+        meanline = list(
+          visible = T
+        ),
+        color = I("blue")
+      )  %>%
+       add_trace(
+    x = ~chronname[plotDataScatter()$gender == 'F'],
+    y = ~total.wins[plotDataScatter()$gender == 'F'],
+    legendgroup = 'F',
+    scalegroup = 'F',
+    width=plotDataScatter()$grad_100_rate[plotDataScatter()$gender == 'F'],
+    name = 'F',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+         color = I("pink")
+       ) %>%
+       layout(
+         xaxis = list(title = 'On-Time Graduation Percentage'), 
+         yaxis = list(title = 'Total Football Wins'),
+         violinmode = 'group'
+       )
+
   )
   
-  output$coordinate_data <- renderPlot(
-    hist(rnorm(10))
+  output$coordinate_data <- renderPlotly(
+    plot_ly() %>% 
+      add_trace(x=plotDataScatter()$total.wins,
+                y=plotDatafitted(),
+                type='scatter',
+                mode='markers', 
+                color=plotDataScatter()$raceAndGender) %>% 
+      layout(title="Model Predictions by Race and Gender")
+    
   )
   
   

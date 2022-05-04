@@ -2,7 +2,7 @@ library(shiny)
 library(plotly)
 library(leaflet)
 
-setwd("C:\\Users\\CRAUST~1\\DOCUME~1\\GitHub\\DATA-V~1")
+#setwd("C:\\Users\\CRAUST~1\\DOCUME~1\\GitHub\\DATA-V~1")
 
 name <- c('University of Alabama at Tuscaloosa', 
           'University of Arkansas at Fayetteville', 'Auburn University', 'University of Florida','University of Georgia', 'University of Kentucky', 'Louisiana State University at Baton Rouge', 'Mississippi State University', 'University of Missouri at Columbia', 'University of Mississippi', 'University of South Carolina at Columbia', 'Texas A&M University at College Station', 'University of Tennessee at Knoxville', 'Vanderbilt University')

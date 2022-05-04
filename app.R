@@ -302,7 +302,7 @@ server <- function(input, output, session){
   
   plotDataLine <- reactive({
     subset(fullData, 
-           fullData$race == 'A' & fullData$gender == 'B' & fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1])
+           fullData$race == 'A' & fullData$gender == 'B' & fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1] & fullData$year<=input$dateRangeEnd & fullData$year>=input$dateRangeBegin)
   })
   
   output$line_data <- renderPlotly(
@@ -321,7 +321,10 @@ server <- function(input, output, session){
   scatterIndex<-reactive({
     (fullData$race %in% races()& 
        fullData$gender %in% genders() &
-       fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1]) 
+       fullData$chronname %in% finalNames()$names[finalNames()$clicked == 1] &
+       fullData$year<=input$dateRangeEnd & 
+       fullData$year>=input$dateRangeBegin
+       ) 
   })
     
   plotDataScatter <- reactive({

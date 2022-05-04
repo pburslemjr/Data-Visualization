@@ -125,3 +125,12 @@ Overall we found that the greatest challenge in this portion of the project was 
 data.world (2017). College Completion [Data file]. Retrieved from https://data.world/databeats/college-completion
 
 College Football Data (2022). College Football Data API [Data file]. Retrieved from https://api.collegefootballdata.com/api/docs/?url=/api-docs.json#/games/getTeamRecords
+
+
+## Individual Contribution
+
+Below is a short summary of the tasks completed by each team member:
+
+Arya: Assisted with the final report paper, and created the interactive map element for our app.
+Paul: Assisted with final report paper, and created app framework (both the UI and the server function)
+Chad: Assisted with final report paper, and created code used to generate each respective plot.
